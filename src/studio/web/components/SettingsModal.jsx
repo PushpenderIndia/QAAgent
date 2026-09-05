@@ -1,9 +1,6 @@
 'use client';
 
-const ENGINE_DEFAULT_MODELS = {
-  claudeCode: 'claude-haiku-4-5',
-  openCode: 'anthropic/claude-haiku-4-5',
-};
+import { useEffect, useState } from 'react';
 
 const AUTH_LABELS = {
   none: 'No auth',
@@ -38,10 +35,48 @@ export default function SettingsModal({
   instructions,
   setInstructions,
 }) {
+  const [modelOptions, setModelOptions] = useState([]);
+  const [modelsLoading, setModelsLoading] = useState(false);
+  const [modelsError, setModelsError] = useState(null);
+
+  // Model IDs come live from the installed SDK for the selected engine (never hardcoded
+  // here), so the list always reflects whatever models that SDK currently supports.
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    setModelsLoading(true);
+    setModelsError(null);
+
+    fetch(`/api/models?engine=${engine}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        if (data.error) {
+          setModelsError(data.error);
+          setModelOptions([]);
+          return;
+        }
+        setModelOptions(data.models || []);
+        if (data.models?.length && !data.models.some((m) => m.value === model)) {
+          setModel(data.models[0].value);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setModelsError(err.message || 'Failed to load models.');
+          setModelOptions([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setModelsLoading(false);
+      });
+
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, engine]);
+
   function handleEngineChange(e) {
-    const nextEngine = e.target.value;
-    setEngine(nextEngine);
-    setModel(ENGINE_DEFAULT_MODELS[nextEngine]);
+    setEngine(e.target.value);
   }
 
   return (
@@ -71,7 +106,30 @@ export default function SettingsModal({
           </label>
           <label className="field">
             Model
-            <input type="text" value={model} onChange={(e) => setModel(e.target.value)} />
+            {modelsLoading ? (
+              <select disabled>
+                <option>Loading models…</option>
+              </select>
+            ) : modelsError ? (
+              <input
+                type="text"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                title={modelsError}
+              />
+            ) : (
+              <select value={model} onChange={(e) => setModel(e.target.value)}>
+                {!modelOptions.some((m) => m.value === model) && model && (
+                  <option value={model}>{model} (custom)</option>
+                )}
+                {modelOptions.map((m) => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
+            )}
+            {modelsError && (
+              <span className="field-error">Couldn&rsquo;t load live models — enter an ID manually.</span>
+            )}
           </label>
         </div>
 

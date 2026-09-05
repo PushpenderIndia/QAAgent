@@ -9,6 +9,7 @@
 import { Command } from 'commander';
 import { init } from './init.js';
 import { generate } from './generate.js';
+import { ensureOpencodeCli } from './ensureOpencodeCli.js';
 import { readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -129,6 +130,8 @@ program
   .option('--no-open', 'Do not automatically open the browser')
   .action(async (options) => {
     const webDir = join(__dirname, '../studio/web');
+
+    await ensureOpencodeCli({ log: console.log });
 
     if (!existsSync(join(webDir, 'node_modules'))) {
       console.log('📦 Installing Studio UI dependencies (first run only)...');
