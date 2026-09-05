@@ -18,7 +18,6 @@ export async function createMcpHttpServer(browserContext) {
     const mcpServer = await createConnection(
         {
             capabilities: ['core', 'testing'],
-            outputMode: 'file',
             saveSession: true,
         },
         () => Promise.resolve(contextWithManagedLifecycle)
