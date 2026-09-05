@@ -233,7 +233,7 @@ async function executeRun({ id, prompt, providerName, model, testType, baseUrl, 
       await context.tracing.start({ screenshots: true, snapshots: true });
       page = await context.newPage();
 
-      resultText = await runAgent(provider, agentPrompt, page, { verbose: true, logger });
+      resultText = await runAgent(provider, agentPrompt, page, { verbose: true, logger, abortController });
     }
 
     record.status = 'passed';

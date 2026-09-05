@@ -48,6 +48,7 @@ export class Orchestrator {
             maxRetries,
             logger: this.logger,
             verbose: this.verbose,
+            signal: this.options.abortController?.signal,
         });
 
         if (result.sessionId) {
