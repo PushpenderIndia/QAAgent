@@ -1,0 +1,9 @@
+name: Example Tests
+
+tests:
+  - name: Add a todo item
+    tags: [smoke]
+    steps:
+      - Navigate to the TodoMVC https://demo.playwright.dev/todomvc/ page
+      - Add a new todo item "Learn QAAgent"
+      - Verify that "Learn QAAgent" appears in the todo list

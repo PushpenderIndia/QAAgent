@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+
+# Agent SDK docs (internal reference)
+.agents-sdk-docs/
+.langchain/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build outputs
+dist/
+build/
+.next/
+
+# Playwright browser cache (if running locally)
+.playwright/
+profile/
+
+# Playwright Test artifacts
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Playwright BDD generated files
+.features-gen/
+cucumber-report/
+
+# Playwright YAML generated files
+.tests-gen/
+
+# CucumberJS reports
+reports/
+
+# CDP endpoint file (created by global setup)
+.cdp-endpoint
+
+#refs
+.agents-sdk-docs/
+.langchain/
+.agents/
+!.agents/skills/
+!.agents/skills/**
+.claude/
+!.claude/skills/
+!.claude/skills/**
+.deepagents/
+.extras/
+backup/
+examples/playwright-bdd-remote/
+.mcp.json
+.claudesdk/
+.steeldevdocs/
+.qa-agent/
+.playwright-mcp/
+conductor/
+.antigravitycli

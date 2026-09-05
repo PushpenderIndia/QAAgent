@@ -1,0 +1,73 @@
+{
+  "name": "qa-agent",
+  "version": "0.0.10",
+  "description": "Agent Harness for Browser Test Automation — write tests in natural language, powered by Claude Code or OpenCode",
+  "type": "module",
+  "bin": {
+    "qa-agent": "src/cli/bin.js"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "keywords": [
+    "agentic-testing",
+    "agentic-engineering",
+    "agent-harness",
+    "vibe-testing",
+    "claude",
+    "agent",
+    "playwright",
+    "browser-automation",
+    "ai",
+    "testing",
+    "mcp",
+    "shared-context",
+    "bdd",
+    "cucumber",
+    "gherkin",
+    "behavior-driven-development"
+  ],
+  "author": "Khusbu Rai",
+  "homepage": "https://github.com/pushpenderindia/QAAgent#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pushpenderindia/QAAgent.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": ">=0.2",
+    "@clack/prompts": "^1.3.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@opencode-ai/sdk": ">=1.14",
+    "@playwright/mcp": "^0.0.73",
+    "chalk": "^5.6.2",
+    "commander": "^12.1.0",
+    "dotenv": "^17.2.3",
+    "inquirer": "^9.3.8",
+    "js-yaml": "^4.1.1",
+    "zod": "^4.4.2"
+  },
+  "peerDependencies": {
+    "@cucumber/cucumber": "^11.0.0",
+    "@playwright/test": "^1.57.0",
+    "playwright-bdd": "^8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "playwright-bdd": {
+      "optional": true
+    },
+    "@cucumber/cucumber": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.126",
+    "@cucumber/cucumber": "^12.2.0",
+    "@opencode-ai/sdk": "^1.14.33",
+    "@playwright/test": "^1.57.0",
+    "playwright-bdd": "^8.4.1"
+  }
+}

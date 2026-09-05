@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Playwright Test artifacts
+test-results/
+playwright-report/
+playwright/.cache/
+.playwright/
+
+# Playwright YAML generated files
+.tests-gen/
+
+# QAAgent & BDD generated files
+.playwright-mcp/
+.features-gen/
+cucumber-report/
+cucumber-test-results/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
