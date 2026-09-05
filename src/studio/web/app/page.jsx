@@ -46,6 +46,7 @@ export default function Page() {
   const [videoUrl, setVideoUrl] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [baseUrlError, setBaseUrlError] = useState(false);
 
   // Tracks the run id whose live 'log' SSE events we should accept — kept in a
   // ref (not state) so the EventSource handler set up once in the mount effect
@@ -150,6 +151,13 @@ export default function Page() {
   async function handleRun() {
     const trimmed = prompt.trim();
     if (!trimmed) return;
+
+    if (!baseUrl.trim()) {
+      setSubmitError('Base URL is required — set it in Settings before running.');
+      setBaseUrlError(true);
+      setShowSettings(true);
+      return;
+    }
 
     setSubmitError(null);
     const res = await fetch('/api/run', {
@@ -263,7 +271,8 @@ export default function Page() {
         testType={testType}
         setTestType={setTestType}
         baseUrl={baseUrl}
-        setBaseUrl={setBaseUrl}
+        setBaseUrl={(v) => { setBaseUrl(v); setBaseUrlError(false); }}
+        baseUrlError={baseUrlError}
         authType={authType}
         setAuthType={setAuthType}
         authUsername={authUsername}

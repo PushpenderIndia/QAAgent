@@ -20,6 +20,7 @@ export default function SettingsModal({
   setTestType,
   baseUrl,
   setBaseUrl,
+  baseUrlError,
   authType,
   setAuthType,
   authUsername,
@@ -133,18 +134,29 @@ export default function SettingsModal({
           </label>
         </div>
 
+        <div className="form-row">
+          <label className="field">
+            Base URL
+            <input
+              type="text"
+              className={baseUrlError ? 'input-error' : ''}
+              placeholder="http://localhost:3000"
+              value={baseUrl}
+              onChange={(e) => setBaseUrl(e.target.value)}
+              autoFocus={baseUrlError}
+            />
+            {baseUrlError && <span className="field-error">Required before running a test.</span>}
+          </label>
+        </div>
+        <p className="hint">
+          {testType === 'api'
+            ? 'Relative request paths resolve against this — useful when a PR is deployed to staging or running locally.'
+            : 'The agent navigates here first — useful when a PR is deployed to staging or running locally instead of a well-known URL.'}
+        </p>
+
         {testType === 'api' && (
           <div className="api-options">
             <div className="form-row">
-              <label className="field">
-                Base URL
-                <input
-                  type="text"
-                  placeholder="http://localhost:3000"
-                  value={baseUrl}
-                  onChange={(e) => setBaseUrl(e.target.value)}
-                />
-              </label>
               <label className="field">
                 Auth
                 <select value={authType} onChange={(e) => setAuthType(e.target.value)}>

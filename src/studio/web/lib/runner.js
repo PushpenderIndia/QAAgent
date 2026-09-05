@@ -76,11 +76,10 @@ async function fetchPrContext(prUrl, signal) {
   return { number: info.number, title: info.title, body: info.body || '', diff, truncated };
 }
 
-function buildPrTestPrompt({ prUrl, number, title, body, diff, truncated }) {
-  const baseUrl = process.env.BASE_URL;
+function buildPrTestPrompt({ prUrl, number, title, body, diff, truncated, baseUrl }) {
   const whereToTest = baseUrl
     ? `The application under test is running at ${baseUrl} — navigate there.`
-    : `No BASE_URL is configured for this Studio session — infer the right URL to test from the diff and PR description below.`;
+    : `No base URL is configured for this Studio session — infer the right URL to test from the diff and PR description below.`;
 
   return `You are testing pull request #${number} by exercising its changes in a real browser.
 
@@ -203,7 +202,11 @@ async function executeRun({ id, prompt, providerName, model, testType, baseUrl, 
       broadcastLog(id, `✅ Fetched PR #${prContext.number} — "${prContext.title}"${prContext.truncated ? ' (diff truncated)' : ''}`);
       agentPrompt = isApi
         ? buildApiPrTestPrompt({ prUrl, ...prContext, baseUrl: resolvedBaseUrl })
-        : buildPrTestPrompt({ prUrl, ...prContext });
+        : buildPrTestPrompt({ prUrl, ...prContext, baseUrl: resolvedBaseUrl });
+    } else if (!isApi && resolvedBaseUrl) {
+      // Plain UI scenario (not a PR diff) — the app may be deployed to a PR's
+      // staging environment or a local dev server rather than a well-known URL.
+      agentPrompt = `The application under test is running at ${resolvedBaseUrl} — navigate there for any relative paths mentioned below.\n\n${prompt}`;
     }
 
     const logger = new Logger(true, { sink: (line) => broadcastLog(id, line) });
@@ -221,6 +224,9 @@ async function executeRun({ id, prompt, providerName, model, testType, baseUrl, 
         abortController,
       });
     } else {
+      if (resolvedBaseUrl) {
+        broadcastLog(id, `🌐 UI mode — testing against ${resolvedBaseUrl}`);
+      }
       browser = await chromium.launch({ headless });
       state.currentRun.browser = browser;
       context = await browser.newContext({ recordVideo: { dir: runDir } });

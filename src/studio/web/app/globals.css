@@ -266,6 +266,9 @@ label.field { display: flex; flex-direction: column; gap: 5px; font-family: var(
 .settings-summary .material-symbols-outlined { font-size: 16px; }
 
 .field-error { font-size: 11px; font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--clay-rose-deep); }
+input.input-error {
+  box-shadow: inset -3px -3px 8px var(--shadow-hi), inset 4px 4px 10px var(--shadow-lo), 0 0 0 2px var(--clay-rose);
+}
 
 button {
   font-family: var(--font-body); font-size: 14px; font-weight: 700;
