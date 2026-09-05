@@ -164,6 +164,20 @@ h2.sidebar-eyebrow {
   letter-spacing: 0.1em; color: var(--clay-ink-dim);
 }
 
+.topbar-actions { display: flex; align-items: center; gap: 12px; }
+.btn-icon {
+  flex: none; width: 38px; height: 38px; border-radius: 30%; padding: 0;
+  background: var(--clay-surface); border: none; cursor: pointer;
+  box-shadow: -3px -3px 7px var(--shadow-hi), 4px 4px 9px var(--shadow-lo);
+  color: var(--clay-ink-dim); display: inline-flex; align-items: center; justify-content: center;
+  transition: box-shadow 0.15s ease, color 0.15s ease, transform 0.08s ease;
+}
+.btn-icon:hover { color: var(--clay-primary-deep); }
+.btn-icon:active {
+  box-shadow: inset -3px -3px 7px var(--shadow-hi), inset 4px 4px 9px var(--shadow-lo);
+  transform: scale(0.94);
+}
+
 .badge {
   display: inline-flex; align-items: center; gap: 7px;
   font-family: var(--font-body); font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
@@ -244,6 +258,12 @@ select, input[type=text], input[type=password] {
 
 label.field { display: flex; flex-direction: column; gap: 5px; font-family: var(--font-body); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--clay-ink-dim); }
 .spacer { flex: 1; }
+
+.settings-summary {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: var(--clay-ink-dim);
+}
+.settings-summary .material-symbols-outlined { font-size: 16px; }
 
 button {
   font-family: var(--font-body); font-size: 14px; font-weight: 700;
@@ -337,6 +357,11 @@ button {
 }
 .modal video { max-width: 80vw; max-height: 70vh; border-radius: 14px; display: block; }
 .modal-close { margin-top: 14px; }
+
+.settings-modal { width: 560px; max-width: 92vw; max-height: 85vh; overflow-y: auto; }
+.settings-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.settings-head h2 { margin: 0; font-family: var(--font-display); font-size: 19px; font-weight: 600; color: var(--clay-ink); }
+.settings-footer { display: flex; justify-content: flex-end; margin-top: 16px; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 880px) {

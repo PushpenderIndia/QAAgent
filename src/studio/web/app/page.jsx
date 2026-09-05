@@ -7,9 +7,13 @@ import RecentRuns from '../components/RecentRuns';
 import LiveLog from '../components/LiveLog';
 import ResultPanel from '../components/ResultPanel';
 import VideoModal from '../components/VideoModal';
+import SettingsModal from '../components/SettingsModal';
 
 const DEFAULT_PROMPT =
   'Go to https://demo.playwright.dev/todomvc, add a todo called "Buy milk", and check it off.';
+
+// Non-secret settings persisted across sessions — auth credentials are deliberately excluded.
+const SETTINGS_STORAGE_KEY = 'qaagent-settings';
 
 function statusForBadge(running, run) {
   if (running) return 'running';
@@ -41,17 +45,25 @@ export default function Page() {
   const [runs, setRuns] = useState([]);
   const [videoUrl, setVideoUrl] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Tracks the run id whose live 'log' SSE events we should accept — kept in a
   // ref (not state) so the EventSource handler set up once in the mount effect
   // always sees the latest value instead of a stale closure.
   const currentRunIdRef = useRef(null);
+  // The run actually in progress — unlike currentRunIdRef, unaffected by browsing history.
+  const activeRunIdRef = useRef(null);
 
   async function loadRuns() {
     try {
       const data = await fetch('/api/runs').then((r) => r.json());
       setRuns(data.runs || []);
-      if (data.running) setRunning(true);
+      if (data.running) {
+        setRunning(true);
+        // On refresh mid-run, the 'run-start' SSE event already fired before we connected.
+        const activeId = data.runs?.[0]?.id;
+        if (activeId) activeRunIdRef.current = activeId;
+      }
     } catch {
       // Best-effort — the SSE stream is the source of truth for live state.
     }
@@ -68,6 +80,27 @@ export default function Page() {
   }, [sidebarCollapsed]);
 
   useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || '{}');
+      if (saved.engine) setEngine(saved.engine);
+      if (saved.model) setModel(saved.model);
+      if (saved.testType) setTestType(saved.testType);
+      if (saved.baseUrl) setBaseUrl(saved.baseUrl);
+      if (saved.authType) setAuthType(saved.authType);
+      if (saved.instructions) setInstructions(saved.instructions);
+    } catch {
+      // Corrupt/missing storage — fall back to defaults.
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(
+      SETTINGS_STORAGE_KEY,
+      JSON.stringify({ engine, model, testType, baseUrl, authType, instructions })
+    );
+  }, [engine, model, testType, baseUrl, authType, instructions]);
+
+  useEffect(() => {
     loadRuns();
 
     const evtSource = new EventSource('/api/stream');
@@ -75,6 +108,7 @@ export default function Page() {
     evtSource.addEventListener('run-start', (e) => {
       const rec = JSON.parse(e.data);
       currentRunIdRef.current = rec.id;
+      activeRunIdRef.current = rec.id;
       setLogLines([]);
       setSubmitError(null);
       setCurrentRun(rec);
@@ -90,6 +124,7 @@ export default function Page() {
 
     evtSource.addEventListener('run-complete', (e) => {
       const rec = JSON.parse(e.data);
+      activeRunIdRef.current = null;
       setRunning(false);
       setCurrentRun(rec);
       loadRuns();
@@ -159,7 +194,7 @@ export default function Page() {
   }
 
   async function handleStop() {
-    const runId = currentRunIdRef.current;
+    const runId = activeRunIdRef.current;
     if (!runId) return;
     try {
       await fetch('/api/run/stop', {
@@ -190,34 +225,15 @@ export default function Page() {
       />
 
       <div className="main-col">
-        <Header status={statusForBadge(running, currentRun)} />
+        <Header status={statusForBadge(running, currentRun)} onOpenSettings={() => setShowSettings(true)} />
 
         <main>
           <PromptForm
             prompt={prompt}
             setPrompt={setPrompt}
             engine={engine}
-            setEngine={setEngine}
             model={model}
-            setModel={setModel}
             testType={testType}
-            setTestType={setTestType}
-            baseUrl={baseUrl}
-            setBaseUrl={setBaseUrl}
-            authType={authType}
-            setAuthType={setAuthType}
-            authUsername={authUsername}
-            setAuthUsername={setAuthUsername}
-            authPassword={authPassword}
-            setAuthPassword={setAuthPassword}
-            authToken={authToken}
-            setAuthToken={setAuthToken}
-            authHeaderName={authHeaderName}
-            setAuthHeaderName={setAuthHeaderName}
-            authHeaderValue={authHeaderValue}
-            setAuthHeaderValue={setAuthHeaderValue}
-            instructions={instructions}
-            setInstructions={setInstructions}
             onRun={handleRun}
             onStop={handleStop}
             running={running}
@@ -236,6 +252,33 @@ export default function Page() {
       </div>
 
       <VideoModal videoUrl={videoUrl} onClose={() => setVideoUrl(null)} />
+
+      <SettingsModal
+        open={showSettings}
+        onClose={() => setShowSettings(false)}
+        engine={engine}
+        setEngine={setEngine}
+        model={model}
+        setModel={setModel}
+        testType={testType}
+        setTestType={setTestType}
+        baseUrl={baseUrl}
+        setBaseUrl={setBaseUrl}
+        authType={authType}
+        setAuthType={setAuthType}
+        authUsername={authUsername}
+        setAuthUsername={setAuthUsername}
+        authPassword={authPassword}
+        setAuthPassword={setAuthPassword}
+        authToken={authToken}
+        setAuthToken={setAuthToken}
+        authHeaderName={authHeaderName}
+        setAuthHeaderName={setAuthHeaderName}
+        authHeaderValue={authHeaderValue}
+        setAuthHeaderValue={setAuthHeaderValue}
+        instructions={instructions}
+        setInstructions={setInstructions}
+      />
     </div>
   );
 }
