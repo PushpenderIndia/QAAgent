@@ -53,7 +53,7 @@
   "peerDependencies": {
     "@cucumber/cucumber": "^11.0.0",
     "@playwright/test": "^1.57.0",
-    "playwright-bdd": "^8.0.0"
+    "playwright-bdd": "^9.2.0"
   },
   "peerDependenciesMeta": {
     "playwright-bdd": {
@@ -68,6 +68,6 @@
     "@cucumber/cucumber": "^12.2.0",
     "@opencode-ai/sdk": "^1.14.33",
     "@playwright/test": "^1.57.0",
-    "playwright-bdd": "^8.4.1"
+    "playwright-bdd": "^9.2.0"
   }
 }
